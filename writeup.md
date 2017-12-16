@@ -11,9 +11,10 @@ The goals / steps of this project are the following:
 
 The approach of taking HOG image features and using them in a linear SVM for classification is not new, it already has been presented at the *Conference on Computer Vision and Pattern Recognition* (CVPR) in 2005 (https://hal.inria.fr/inria-00548512/document). In addition to this approach also considers spatial features (resized image) and color histogram features in order to make more robust detections.
 
+The whole code can be found in the jupyter notebook [vehicle_detection_and_tracking.ipynb](./vehicle_detection_and_tracking.ipynb)
+
 [//]: # (Image References)
 [image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
 [image3]: ./examples/sliding_windows.jpg
 [image4]: ./examples/sliding_window.jpg
 [image5]: ./examples/bboxes_and_heat.png
@@ -24,28 +25,39 @@ The approach of taking HOG image features and using them in a linear SVM for cla
 
 ## Histogram of Oriented Gradients (HOG)
 
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
-
-I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+I started by reading in all the `vehicle` and `non-vehicle` images. From the dataset which is a mix between the KITTI, GTI and Udacity datasets.
+Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
 ![alt text][image1]
 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+Here is an example using the `HLS` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)` which seemed to work very well with the given data:
 
-![alt text][image2]
+![./examples/hog_features.png]
 
 
 **Choosing HOG parameters**
 
-I tried various combinations of parameters and...
+I experimented with a number of different combinations of color spaces and HOG parameters and trained a linear SVM using different combinations of HOG features extracted from the color channels. Having used `HLS` colorspace in previous projects I right away settled to use it in this project as well, because each of the `HLS` channels seem to capture preserve shapes even in different light conditions very well.
+Playing with the orientation bins I found that going from 9 to 12 didn't help much to improve accuracy in the SVM classification, it only blew up the feature vecture, so I stuck with `9` orientation bins.
+Similarly, changing `pixels_per_cell=(8,8)` and `cells_per_block=(2,2)` to other values did not improve results much, which is why left those values to one we already used in class.
 
 ## Using spatial and histogram image features
 
-## Using feature vector to train a linear SVM
+Another method to directly capture the input data is to just scale the input images down to a fairly small size and flatten the resulting pixels into a vector. It's a very small representation of the original image but it still contains important cues of the content.
 
-I trained a linear SVM using...
+![./example/spatial_feature.png]
+
+Particularly in the case of classifying cars it makes sense to add color cues into the feature vector. This is done by computing a histogram for each color channel and flatten all bins into a vector. In my case I used 32 bins of each channel.
+
+
+## Using the feature vector to train a linear SVM
+ 
+In the course of this project I experimented with SVMs using an RBF kernel as well as a linear SGDClassifier which uses stochastic gradient descent and a linear SVM like loss function.
+Unfortunately the RBF SVM was way too slow during training and predicting, so I abolished using it. 
+The SGDClassifier however didn't score as well as the linear SVM but seemed to produce less false positive detections.
+
 
 ## Sliding Window Search
 
@@ -53,16 +65,24 @@ That's how a sliding window works. In my case it's implemented on top of the sub
 
 **Choosing parameters**
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+I chose to use three window scales and along with them different y ranges where the sliding windows operate.
+Because cars appearing smaller will most likely be farer in the distance, so only searching in the upper y range for small appearing cars already significantly reduces the amount of windows.
+Here is my configuration:
+```python
+# Min and max in y to search in slide_window()
+y_start_stop = [[400, 520], [400, 620], [400, 700]]
+scales      =  [1.0       , 1.5       , 2.0       ]
+```
 
 ![alt text][image3]
 
 
 ## Vehicle detection pipeline
 
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+Ultimately I searched on two scales using HLS 3-channel HOG features plus spatially binned color and histograms of color in the feature vector. Here are some example images:
 
 ![alt text][image4]
+
 
 ## Filtering false positives and combining overlapping bounding boxes
 
@@ -90,3 +110,8 @@ I tested the vehicle detection pipeline on the following videos:
 ## Discussion
 
 In this project it was really tough to find the right balance between accuray and computation time.
+In the end I settled with a simple linear SVM and a feature vector of length 6156, which allowed to process approx. 1 fps.
+Not very fast, I've to say, comparing it to recent advancements in deep learning like [YOLO2](https://pjreddie.com/darknet/yolo) which allows processing with more around 40-60 fps on images with 
+
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 
