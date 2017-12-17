@@ -65,7 +65,8 @@ The SGDClassifier however didn't score as well as the linear SVM but seemed to p
 
 ## Sliding Window Search
 
-That's how a sliding window works. In my case it's implemented on top of the subsampling of the HOG features for the whole search area...
+In my solution the sliding window search is implemented on top of the subsampling of the HOG features for the whole search area, because calculating HOG features for each and every window is too computationally expensive.
+I decided to use three different window sizes 
 
 **Choosing parameters**
 
@@ -74,25 +75,38 @@ Because cars appearing smaller will most likely be farer in the distance, so onl
 Here is my configuration:
 ```python
 # Min and max in y to search in slide_window()
-y_start_stop = [[400, 520], [400, 620], [400, 700]]
-scales      =  [1.0       , 1.5       , 2.0       ]
+y_start_stop    = [[400, 580], [400, 650], [400, 720]]
+scales          = [  1.2     ,  1.6       ,   2.0    ]
+cells_per_steps = [    3     ,    3       ,     4    ]
 ```
+Resulting in 123 windows for scale 1.2, 90 windows for scale 1.6 and 54 windwos for scale 2.0.
+So 267 search windows in total.
 
-![alt text][image3]
-
+![](./examples/slidingwindows_full.png)
 
 ## Vehicle detection pipeline
 
-Ultimately I searched on two scales using HLS 3-channel HOG features plus spatially binned color and histograms of color in the feature vector. Here are some example images:
+Ultimately I searched on two scales using HLS 3-channel HOG features plus spatially binned color and histograms of color in the feature vector. In order to 
 
-![alt text][image4]
+![](./examples/slidingwindows1.png)
+
+![](./examples/slidingwindows2.png)
+
+![](./examples/slidingwindows3.png)
+
+![](./examples/slidingwindows4.png)
+
+![](./examples/slidingwindows5.png)
+
+![](./examples/slidingwindows6.png)
 
 
 ## Filtering false positives and combining overlapping bounding boxes
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
+I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions. I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap. I then assumed each blob corresponded to a vehicle. I constructed bounding boxes to cover the area of each blob detected.  
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
+
 
 **Here are six frames and their corresponding heatmaps:**
 
