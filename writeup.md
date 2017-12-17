@@ -34,7 +34,7 @@ I then explored different color spaces and different `skimage.hog()` parameters 
 
 Here is an example using the `HLS` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)` which seemed to work very well with the given data:
 
-![./examples/hog_features.png]
+![](./examples/hog-features.png)
 
 
 **Choosing HOG parameters**
