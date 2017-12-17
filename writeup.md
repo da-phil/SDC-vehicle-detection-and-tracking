@@ -47,9 +47,13 @@ Similarly, changing `pixels_per_cell=(8,8)` and `cells_per_block=(2,2)` to other
 
 Another method to directly capture the input data is to just scale the input images down to a fairly small size and flatten the resulting pixels into a vector. It's a very small representation of the original image but it still contains important cues of the content.
 
-![./example/spatial_feature.png]
+![](./example/spatial-feature.png)
 
 Particularly in the case of classifying cars it makes sense to add color cues into the feature vector. This is done by computing a histogram for each color channel and flatten all bins into a vector. In my case I used 32 bins of each channel.
+
+![](./example/example_img_small.png)
+
+![](./example/hist-features.png)
 
 
 ## Using the feature vector to train a linear SVM
