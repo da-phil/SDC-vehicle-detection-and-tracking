@@ -1,5 +1,7 @@
 # Vehicle Detection Project
 
+![](./videos_output/project_video.mp4.gif)
+
 The goals / steps of this project are the following:
 
 * Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier
@@ -84,6 +86,10 @@ In the following image all windows are shown scale 1.2 windows in red, scale 1.6
 ![](./examples/slidingwindows-full.png)
 
 ## Vehicle detection pipeline examples
+Here are the parameters for my pipeline alltogether:
+Colorspace:  YCrCb, spatial_size:  (32, 32), hist_bins:  32
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 8460
 
 In the following examples you can see in the left image all the areas where a vehicle was detected and the right image shows the grid of search windows.
 The color coding works this way:
@@ -133,9 +139,8 @@ I tested the vehicle detection pipeline on the following videos:
 * [test_video.mp4](./videos_output/test_video.mp4)  
 
 ## Discussion
-
-In this project it was really tough to find the right balance between accuray and computation time.
-In the end I settled with a simple linear SVM and a feature vector of length 6156, which allowed to process approx. 1 fps.
+In this project it was really tough to find the right balance between accuray and computation time in the processing pipeline.
+In the end I settled with a simple linear SVM and a feature vector of length 8460, which allowed to process approx. 1 fps.
 Not very fast, I've to say, comparing it to recent advancements in deep learning like [YOLO2](https://pjreddie.com/darknet/yolo) which allows processing with around 40-60 fps on images with similar size. Of course this solution is highly optimized for running on a GPU but still impressive.
 I think my pipeline has a lot of potential to be parallized and therefore optimized to achive a way higher framerate, after all there is a lot of independent stuff running sequentially which can be easily run in parallel.
 
