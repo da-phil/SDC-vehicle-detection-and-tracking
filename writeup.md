@@ -20,8 +20,6 @@ The whole code can be found in the jupyter notebook [vehicle_detection_and_track
 [image5]: ./examples/bboxes_and_heat.png
 [image6]: ./examples/labels_map.png
 [image7]: ./examples/output_bboxes.png
-[video1]: ./project_video.mp4
-
 
 ## Histogram of Oriented Gradients (HOG)
 
@@ -81,12 +79,18 @@ cells_per_steps = [    3     ,    3       ,     4    ]
 ```
 Resulting in 123 windows for scale 1.2, 90 windows for scale 1.6 and 54 windwos for scale 2.0.
 So 267 search windows in total.
+In the following image all windows are shown scale 1.2 windows in red, scale 1.6 windows in green and scale 2.0 windows in blue:
 
 ![](./examples/slidingwindows-full.png)
 
-## Vehicle detection pipeline
+## Vehicle detection pipeline examples
 
-Ultimately I searched on two scales using HLS 3-channel HOG features plus spatially binned color and histograms of color in the feature vector. In order to 
+In the following examples you can see in the left image all the areas where a vehicle was detected and the right image shows the grid of search windows.
+The color coding works this way:
+* Red: scale 1.2 windows
+* Green: scale 1.6 windows
+* Blue: scale 2.0 windows
+* Violet: accumulated heatmap detected window (see explanation below)
 
 ![](./examples/slidingwindows1.png)
 
