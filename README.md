@@ -1,9 +1,10 @@
 # Vehicle Detection
 
-In this project, your goal is to write a software pipeline to detect vehicles in a video (start with the test_video.mp4 and later implement on full project_video.mp4).
+![](./videos_output/project_video.mp4.gif)
+
+In this project, your goal is to write a software pipeline to detect vehicles in a video (starting with the `test_video.mp4` and later implementing on full `project_video.mp4`).
 
 The goals / steps of this project are the following:
-
 * Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier
 * Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
 * Note: for those first two steps don't forget to normalize your features and randomize a selection for training and testing.
