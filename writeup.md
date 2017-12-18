@@ -82,7 +82,7 @@ cells_per_steps = [    3     ,    3       ,     4    ]
 Resulting in 123 windows for scale 1.2, 90 windows for scale 1.6 and 54 windwos for scale 2.0.
 So 267 search windows in total.
 
-![](./examples/slidingwindows_full.png)
+![](./examples/slidingwindows-full.png)
 
 ## Vehicle detection pipeline
 
@@ -103,10 +103,13 @@ Ultimately I searched on two scales using HLS 3-channel HOG features plus spatia
 
 ## Filtering false positives and combining overlapping bounding boxes
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions. I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap. I then assumed each blob corresponded to a vehicle. I constructed bounding boxes to cover the area of each blob detected.  
+I collected the positions of positive detections in a list and from the positive detections I created a heatmap and then thresholded that map to identify vehicle positions. I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap. I then assumed each blob corresponded to a vehicle. I constructed bounding boxes to cover the area of each blob detected.  
+Here is an example for a single image:
 
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
+![](./examples/heatmap.png)
 
+For videos I collected positive detections across `nr_frames = 20` in a queue and created a heat map from that to find the areas 
+where positive detections were accumulated.
 
 **Here are six frames and their corresponding heatmaps:**
 
@@ -129,7 +132,11 @@ I tested the vehicle detection pipeline on the following videos:
 
 In this project it was really tough to find the right balance between accuray and computation time.
 In the end I settled with a simple linear SVM and a feature vector of length 6156, which allowed to process approx. 1 fps.
-Not very fast, I've to say, comparing it to recent advancements in deep learning like [YOLO2](https://pjreddie.com/darknet/yolo) which allows processing with more around 40-60 fps on images with 
+Not very fast, I've to say, comparing it to recent advancements in deep learning like [YOLO2](https://pjreddie.com/darknet/yolo) which allows processing with around 40-60 fps on images with similar size. Of course this solution is highly optimized for running on a GPU but still impressive.
+I think my pipeline has a lot of potential to be parallized and therefore optimized to achive a way higher framerate, after all there is a lot of independent stuff running sequentially which can be easily run in parallel.
 
-Using: 9 orientations 8 pixels per cell and 2 cells per block
-Feature vector length: 
+My pipeline still lacks the following things:
+* I didn't optimize the SVM training by hand-selecting features within the time-series training images, which leads to considerable overfitting, I assume the precision of my classifier to be rather low , whereas the recall seems to be high, which is evident by the accuracy result on the test set.
+* Pipeline is slow, needs parallel optimization
+* False-positive filtering on video is not very effective yet, it's still a WIP because of the tight deadline
+* Effectively I'm not tracking vehicles, this still needs to be implemented
